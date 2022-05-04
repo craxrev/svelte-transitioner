@@ -5,6 +5,9 @@
 
     import { lastLeaveDuration } from '$lib/transitioner';
 
+    const globalEnterConfig = getContext('globalEnterConfig');
+    const globalLeaveConfig = getContext('globalLeaveConfig');
+
     const initCallback = getContext('initCallback');
     const enterConfig = getContext('enterConfig');
     const leaveConfig = getContext('leaveConfig');
@@ -13,29 +16,89 @@
         initCallback && initCallback(node);
     };
     const enter = (node) => {
-        const { callback = () => null, duration = 0 } = enterConfig ?? {};
+        const { tick, timeline, duration = 0 } = enterConfig ?? { };
+        const { tick: globalTick, timeline: globalTimeline } = globalEnterConfig ?? { };
 
-        const { css } = fly(node, duration);
+        const delay = get(lastLeaveDuration) ?? 0;
+
+        let globalTl;
+        let tl;
+        let theDuration = 0;
+        let theTick = () => null;
+
+        if (globalTimeline) {
+            globalTl = globalTimeline(node);
+        }
+        if (timeline) {
+            tl = timeline(node);
+        }
+
+        if (timeline) {
+            theDuration = tl.duration() * 1000;
+            theTick = globalTimeline ? (t) => {
+                globalTl.progress(t);
+                tl.progress(t);
+            } : (t) => {
+                tl.progress(t);
+            };
+        } else if (tick) {
+            theDuration = duration;
+            theTick = globalTimeline ? (t) => {
+                globalTl.progress(t);
+                tick(node, t);
+            } : (t) => {
+                globalTick(node, t);
+                tick(node, t);
+            };
+        }
 
         return {
-            duration,
-            delay: get(lastLeaveDuration) ?? 0,
-            tick: (t) => callback(node, t),
-            css
-        }
+            delay,
+            duration: theDuration,
+            tick: theTick,
+        };
     };
     const leave = (node) => {
-        const { callback = () => null, duration = 0 } = leaveConfig ?? {};
+        const { tick, timeline, duration = 0 } = leaveConfig ?? { };
+        const { tick: globalTick, timeline: globalTimeline } = globalLeaveConfig ?? { };
 
-        lastLeaveDuration.set(duration);
+        let globalTl;
+        let tl;
+        let theDuration = 0;
+        let theTick = () => null;
 
-        const { css } = fly(node, duration);
+        if (globalTimeline) {
+            globalTl = globalTimeline(node);
+        }
+        if (timeline) {
+            tl = timeline(node);
+        }
+
+        if (timeline) {
+            theDuration = tl.duration() * 1000;
+            theTick = globalTimeline ? (t) => {
+                globalTl.progress(t);
+                tl.progress(t);
+            } : (t) => {
+                tl.progress(t);
+            };
+        } else if (tick) {
+            theDuration = duration;
+            theTick = globalTimeline ? (t) => {
+                globalTl.progress(t);
+                tick(node, t);
+            } : (t) => {
+                globalTick(node, t);
+                tick(node, t);
+            };
+        }
+
+        lastLeaveDuration.set(theDuration);
 
         return {
-            duration,
-            tick: (t) => callback(node, t),
-            css,
-        }
+            duration: theDuration,
+            tick: theTick,
+        };
     };
 </script>
 

@@ -2,16 +2,18 @@
     import { onInit, onEnter, onLeave } from "$lib/transitioner";
     import Transition from "$lib/Components/Transition.svelte";
 
+    const animateInHero = (node) => {
+
+    };
+    const animateOutHero = (node) => {
+
+    };
+
     onInit((node) => {
         console.log('init:', '/num/one', node);
     });
-    onEnter(() => {
-        console.log('in:', '/num/one');
-    }, 1000, '/num/one');
-
-    onLeave(() => {
-        console.log('out:', '/num/one');
-    }, 1000, '/num/one');
+    onEnter(animateInHero);
+    onLeave(animateOutHero);
 </script>
 
 <Transition>
