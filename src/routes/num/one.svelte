@@ -1,10 +1,13 @@
 <script>
-    import { onEnter, onLeave } from "$lib/transitioner";
+    import { onInit, onEnter, onLeave } from "$lib/transitioner";
     import Transition from "$lib/Components/Transition.svelte";
 
+    onInit((node) => {
+        console.log('init:', '/num/one', node);
+    });
     onEnter(() => {
         console.log('in:', '/num/one');
-    }, null, '/num/one');
+    }, 1000, '/num/one');
 
     onLeave(() => {
         console.log('out:', '/num/one');

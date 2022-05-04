@@ -4,7 +4,7 @@
 
     onEnter(() => {
         console.log('in:', '/num/three');
-    }, null, '/num/three');
+    }, 1000, '/num/three');
 
     onLeave(() => {
         console.log('out:', '/num/three');
