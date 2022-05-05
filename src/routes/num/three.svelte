@@ -1,14 +1,5 @@
 <script>
-    import { onEnter, onLeave } from "$lib/transitioner";
-    import Transitioner from "$lib/Components/Transitioner.svelte";
-
-    onEnter(() => {
-        console.log('in:', '/num/three');
-    }, 1000, '/num/three');
-
-    onLeave(() => {
-        console.log('out:', '/num/three');
-    }, 1000, '/num/three');
+    import { onEnter, onLeave, Transitioner } from "$lib";
 </script>
 
 <Transitioner>

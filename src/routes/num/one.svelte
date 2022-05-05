@@ -1,19 +1,39 @@
 <script>
-    import { onInit, onEnter, onLeave } from "$lib/transitioner";
-    import Transitioner from "$lib/Components/Transitioner.svelte";
+    import { gsap } from 'gsap';
 
-    const animateInHero = (node) => {
-
-    };
-    const animateOutHero = (node) => {
-
-    };
+    import { onInit, onEnter, onLeave, Transitioner } from "$lib";
 
     onInit((node) => {
-        console.log('init:', '/num/one', node);
+        gsap.set(node, {
+            opacity: 0,
+        });
     });
-    onEnter(animateInHero);
-    onLeave(animateOutHero);
+    onEnter((node) => {
+        const tl = gsap.timeline({
+            paused: true
+        });
+
+        tl.set(node, {
+            opacity: 1
+        }).from(node, {
+            duration: 1,
+            yPercent: -100,
+        });
+
+        return tl;
+    });
+    onLeave((node) => {
+        const tl = gsap.timeline({
+            paused: true
+        });
+
+        tl.to(node, {
+            duration: 1,
+            yPercent: -100,
+        });
+
+        return tl;
+    });
 </script>
 
 <Transitioner>

@@ -1,21 +1,14 @@
 <script>
-    import { onMount, setContext } from 'svelte';
-    import { page } from '$app/stores';
-    import { navigating } from '$app/stores';
-
-    import TransitionLayout from '$lib/Components/TransitionLayout.svelte';
-    import { init as initTransitioner, onGlobalEnter, onGlobalLeave } from '$lib/transitioner';
+    import { init as initTransitioner, onGlobalEnter, onGlobalLeave, TransitionLayout } from '$lib';
 
     initTransitioner();
 
-    const animateIn = (node) => {
-
-    };
-
-    onGlobalEnter(() => {
-        console.log('global in!');
-    });
-    onGlobalLeave(animateIn, true);
+    // onGlobalEnter(() => {
+    //     console.log('global in!');
+    // });
+    // onGlobalLeave(() => {
+    //     console.log('global out!');
+    // });
 </script>
 
 <TransitionLayout>

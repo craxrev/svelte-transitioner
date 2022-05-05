@@ -1,21 +1,24 @@
-<script>
-    import { getContext, setContext } from "svelte";
+<script lang="ts">
+    import { getContext } from "svelte";
     import { get } from "svelte/store";
     import { fly } from "svelte/transition";
 
-    import { lastLeaveDuration } from '$lib/transitioner';
+    import type { GlobalEnterConfig, GlobalLeaveConfig, EnterConfig, InitCallback, LeaveConfig, Tick } from "$lib";
+    import { lastLeaveDuration } from '$lib';
+    
+    type SvelteTick = (t: number, u: number) => void;
 
-    const globalEnterConfig = getContext('globalEnterConfig');
-    const globalLeaveConfig = getContext('globalLeaveConfig');
+    const globalEnterConfig: GlobalEnterConfig = getContext('globalEnterConfig');
+    const globalLeaveConfig: GlobalLeaveConfig = getContext('globalLeaveConfig');
 
-    const initCallback = getContext('initCallback');
-    const enterConfig = getContext('enterConfig');
-    const leaveConfig = getContext('leaveConfig');
+    const initCallback: InitCallback = getContext('initCallback');
+    const enterConfig: EnterConfig = getContext('enterConfig');
+    const leaveConfig: LeaveConfig = getContext('leaveConfig');
 
-    const initAction = (node) => {
+    const initAction = (node: HTMLElement) => {
         initCallback && initCallback(node);
     };
-    const enter = (node) => {
+    const enter = (node: HTMLElement, _config: {}) => {
         const { tick, timeline, duration = 0 } = enterConfig ?? { };
         const { tick: globalTick, timeline: globalTimeline } = globalEnterConfig ?? { };
 
@@ -24,11 +27,11 @@
         let globalTl;
         let tl;
         let theDuration = 0;
-        let theTick = () => null;
+        let theTick: SvelteTick = () => null;
 
         if (globalTimeline) {
             globalTl = globalTimeline(node);
-            if (!globalTl?.progress || !globalTl?.duration) {
+            if (!globalTl?.duration || !globalTl?.progress) {
                 throw 'Enter: not a global timeline object!';
             }
         }
@@ -60,7 +63,7 @@
             };
         }
 
-        const { css } = fly(node, { delay, theDuration });
+        const { css } = fly(node, { delay, duration: theDuration });
 
         return {
             delay,
@@ -69,18 +72,18 @@
             // css,
         };
     };
-    const leave = (node) => {
+    const leave = (node: HTMLElement, _config: {}) => {
         const { tick, timeline, duration = 0 } = leaveConfig ?? { };
         const { tick: globalTick, timeline: globalTimeline } = globalLeaveConfig ?? { };
 
         let globalTl;
         let tl;
         let theDuration = 0;
-        let theTick = () => null;
+        let theTick: SvelteTick = () => null;
 
         if (globalTimeline) {
             globalTl = globalTimeline(node);
-            if (!globalTl?.progress || !globalTl?.duration) {
+            if (!globalTl?.duration || !globalTl?.progress) {
                 throw 'Leave: not a global timeline object!';
             }
         }
@@ -114,7 +117,7 @@
 
         lastLeaveDuration.set(theDuration);
 
-        const { css } = fly(node, { theDuration });
+        const { css } = fly(node, { duration: theDuration });
 
         return {
             duration: theDuration,

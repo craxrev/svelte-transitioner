@@ -1,4 +1,4 @@
-import { rand, sleep } from "$lib/utils";
+import { rand, sleep } from "$lib";
 
 export const get = async () => {
     await sleep(2);

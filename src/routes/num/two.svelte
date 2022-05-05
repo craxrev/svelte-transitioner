@@ -1,14 +1,39 @@
 <script>
-    import { onEnter, onLeave } from "$lib/transitioner";
-    import Transitioner from "$lib/Components/Transitioner.svelte";
+    import { gsap } from 'gsap';
 
-    onEnter(() => {
-        console.log('in:', '/num/two');
-    }, 1000, '/num/two');
+    import { onInit, onEnter, onLeave, Transitioner } from "$lib";
 
-    onLeave(() => {
-        console.log('out:', '/num/two');
-    }, 1000, '/num/two');
+    onInit((node) => {
+        gsap.set(node, {
+            opacity: 0,
+        });
+    });
+    onEnter((node) => {
+        const tl = gsap.timeline({
+            paused: true
+        });
+
+        tl.set(node, {
+            opacity: 1
+        }).from(node, {
+            duration: 1,
+            xPercent: -100,
+        });
+
+        return tl;
+    });
+    onLeave((node) => {
+        const tl = gsap.timeline({
+            paused: true
+        });
+
+        tl.to(node, {
+            duration: 1,
+            xPercent: -100,
+        });
+
+        return tl;
+    });
 </script>
 
 <Transitioner>
