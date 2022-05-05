@@ -1,6 +1,6 @@
 <script>
     import { onInit, onEnter, onLeave } from "$lib/transitioner";
-    import Transition from "$lib/Components/Transition.svelte";
+    import Transitioner from "$lib/Components/Transitioner.svelte";
 
     onInit((node) => {
         console.log('init:', '/', node);
@@ -14,8 +14,8 @@
 
 </script>
 
-<Transition>
+<Transitioner>
     <a href="/num/one">one.svelte</a>
     <a href="/num/two">two.svelte</a>
     <a href="/num/three">three.svelte</a>
-</Transition>
+</Transitioner>

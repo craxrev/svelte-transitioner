@@ -1,6 +1,6 @@
 <script>
     import { onInit, onEnter, onLeave } from "$lib/transitioner";
-    import Transition from "$lib/Components/Transition.svelte";
+    import Transitioner from "$lib/Components/Transitioner.svelte";
 
     const animateInHero = (node) => {
 
@@ -16,10 +16,10 @@
     onLeave(animateOutHero);
 </script>
 
-<Transition>
+<Transitioner>
     1111
     <a href="/">index.svelte</a>
     <a href="/num/one">one.svelte</a>
     <a href="/num/two">two.svelte</a>
     <a href="/num/three">three.svelte</a>
-</Transition>
+</Transitioner>

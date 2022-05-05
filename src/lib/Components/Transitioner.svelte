@@ -28,9 +28,15 @@
 
         if (globalTimeline) {
             globalTl = globalTimeline(node);
+            if (!globalTl?.progress || !globalTl?.duration) {
+                throw 'Enter: not a global timeline object!';
+            }
         }
         if (timeline) {
             tl = timeline(node);
+            if (!tl?.progress || !tl?.duration) {
+                throw 'Enter: not a component timeline object!';
+            }
         }
 
         if (timeline) {
@@ -69,9 +75,15 @@
 
         if (globalTimeline) {
             globalTl = globalTimeline(node);
+            if (!globalTl?.progress || !globalTl?.duration) {
+                throw 'Leave: not a global timeline object!';
+            }
         }
         if (timeline) {
             tl = timeline(node);
+            if (!tl?.progress || !tl?.duration) {
+                throw 'Leave: not a component timeline object!';
+            }
         }
 
         if (timeline) {
