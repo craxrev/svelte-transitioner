@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { navigating } from '$app/stores';
 
+    import TransitionLayout from '$lib/Components/TransitionLayout.svelte';
     import { init as initTransitioner, onGlobalEnter, onGlobalLeave } from '$lib/transitioner';
 
     initTransitioner();
@@ -17,4 +18,6 @@
     onGlobalLeave(animateIn, true);
 </script>
 
-<slot />
+<TransitionLayout>
+    <slot />
+</TransitionLayout>
