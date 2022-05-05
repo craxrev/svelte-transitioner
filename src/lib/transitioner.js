@@ -11,26 +11,14 @@ export const onGlobalEnter = (callback, isTimeline) => {
     setContext('globalEnterConfig', !isTimeline ? {
         tick: callback,
     } : {
-        timeline: (node) => { // TODO: THIS IS TEMP
-            const tl = callback(node);
-            return {
-                progress: (t) => null,
-                duration: () => 0
-            }
-        }
+        timeline: callback
     });
 };
 export const onGlobalLeave = (callback, isTimeline) => {
     setContext('globalLeaveConfig', !isTimeline ? {
         tick: callback,
     } : {
-        timeline: (node) => { // TODO: THIS IS TEMP
-            const tl = callback(node);
-            return {
-                progress: (t) => null,
-                duration: () => 0
-            }
-        }
+        timeline: callback
     });
 };
 
@@ -43,13 +31,7 @@ export const onEnter = (callback, duration) => {
         tick: callback,
         duration
     } : {
-        timeline: (node) => { // TODO: THIS IS TEMP
-            const tl = callback(node);
-            return {
-                progress: (t) => null,
-                duration: () => 0
-            }
-        }
+        timeline: callback
     });
 };
 export const onLeave = (callback, duration) => {
@@ -57,13 +39,7 @@ export const onLeave = (callback, duration) => {
         tick: callback,
         duration
     } : {
-        timeline: (node) => { // TODO: THIS IS TEMP
-            const tl = callback(node);
-            return {
-                progress: (t) => null,
-                duration: () => 0
-            }
-        }
+        timeline: callback
     });
 };
 

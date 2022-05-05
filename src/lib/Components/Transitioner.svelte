@@ -52,16 +52,21 @@
             theTick = globalTimeline ? (t) => {
                 globalTl.progress(t);
                 tick(node, t);
-            } : (t) => {
+            } : globalTick ? (t) => {
                 globalTick(node, t);
+                tick(node, t);
+            } : (t) => {
                 tick(node, t);
             };
         }
+
+        const { css } = fly(node, { delay, theDuration });
 
         return {
             delay,
             duration: theDuration,
             tick: theTick,
+            // css,
         };
     };
     const leave = (node) => {
@@ -88,28 +93,33 @@
 
         if (timeline) {
             theDuration = tl.duration() * 1000;
-            theTick = globalTimeline ? (t) => {
+            theTick = globalTimeline ? (_, t) => {
                 globalTl.progress(t);
                 tl.progress(t);
-            } : (t) => {
+            } : (_, t) => {
                 tl.progress(t);
             };
         } else if (tick) {
             theDuration = duration;
-            theTick = globalTimeline ? (t) => {
+            theTick = globalTimeline ? (_, t) => {
                 globalTl.progress(t);
                 tick(node, t);
-            } : (t) => {
+            } : globalTick ? (_, t) => {
                 globalTick(node, t);
+                tick(node, t);
+            } : (_, t) => {
                 tick(node, t);
             };
         }
 
         lastLeaveDuration.set(theDuration);
 
+        const { css } = fly(node, { theDuration });
+
         return {
             duration: theDuration,
             tick: theTick,
+            // css,
         };
     };
 </script>
