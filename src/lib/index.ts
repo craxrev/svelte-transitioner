@@ -1,4 +1,4 @@
-export { default as Transitioner } from './Components/Transitioner.svelte';
-export { default as TransitionLayout } from './Components/TransitionLayout.svelte';
+export { default as Transitioner } from './Transitioner.svelte';
+export { default as TransitionLayout } from './TransitionLayout.svelte';
 export * from './transitioner';
 export * from './utils';

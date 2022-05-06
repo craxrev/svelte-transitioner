@@ -1,5 +1,6 @@
 <script>
-    import { init as initTransitioner, onGlobalEnter, onGlobalLeave, TransitionLayout } from '$lib';
+    import { init as initTransitioner, onGlobalEnter, onGlobalLeave } from '$lib/transitioner';
+    import TransitionLayout from '$lib/TransitionLayout.svelte';
 
     initTransitioner();
 

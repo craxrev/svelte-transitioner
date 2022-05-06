@@ -1,5 +1,5 @@
-import { writable } from "svelte/store";
 import { setContext } from "svelte";
+import { writable } from "svelte/store";
 
 export type Tick = (node: HTMLElement, t: number) => void;
 export type Timeline = (node: HTMLElement) => {

@@ -6,7 +6,7 @@
     div {
         display: grid;
     }
-    div > :global(div) {
+    div > :global(.transition-wrapper) {
         grid-column: 1/2;
         grid-row: 1/2;
     }

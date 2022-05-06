@@ -1,5 +1,6 @@
 <script>
-    import { onInit, onEnter, onLeave, Transitioner } from "$lib";
+    import { onInit, onEnter, onLeave } from "$lib/transitioner";
+    import Transitioner from "$lib/Transitioner.svelte";
 
     onInit((node) => {
         console.log('init:', '/', node);

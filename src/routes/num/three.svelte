@@ -1,5 +1,6 @@
 <script>
-    import { onEnter, onLeave, Transitioner } from "$lib";
+    import { onEnter, onLeave } from "$lib/transitioner";
+    import Transitioner from "$lib/Transitioner.svelte";
 </script>
 
 <Transitioner>

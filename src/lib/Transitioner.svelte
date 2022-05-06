@@ -3,8 +3,8 @@
     import { get } from "svelte/store";
     import { fly } from "svelte/transition";
 
-    import type { GlobalEnterConfig, GlobalLeaveConfig, EnterConfig, InitCallback, LeaveConfig, Tick } from "$lib";
-    import { lastLeaveDuration } from '$lib';
+    import type { GlobalEnterConfig, GlobalLeaveConfig, EnterConfig, InitCallback, LeaveConfig } from "$lib/transitioner";
+    import { lastLeaveDuration } from '$lib/transitioner';
     
     type SvelteTick = (t: number, u: number) => void;
 
