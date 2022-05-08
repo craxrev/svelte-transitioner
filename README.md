@@ -41,18 +41,16 @@ onEnter((node, t) => {
 
 // Or you can use a GSAP Timeline callback instead, like the following
 onGlobalEnter((node) => {
-    onLeave((node) => {
-        const tl = gsap.timeline({
-            paused: true
-        })
-
-        tl.to(node, {
-            duration: 1,
-            yPercent: -100,
-        })
-
-        return tl
+    const tl = gsap.timeline({
+        paused: true
     })
+
+    tl.to(node, {
+        duration: 1,
+        yPercent: -100,
+    })
+
+    return tl
 })
 ```
 
