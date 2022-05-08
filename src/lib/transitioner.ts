@@ -1,45 +1,40 @@
 import { setContext } from "svelte";
 import { writable } from "svelte/store";
 
-export type Tick = (node: HTMLElement, t: number) => void;
-export type Timeline = (node: HTMLElement) => {
+export interface CustomTimeline {
     duration: () => number;
-    progress: (t) => void;
+    progress: (t: number) => void;
 };
-export interface GlobalEnterConfig {
-    tick?: Tick;
-    timeline?: Timeline;
-};
-export interface GlobalLeaveConfig {
-    tick?: Tick;
-    timeline?: Timeline;
-};
+export type NodeTick = (node: HTMLElement, t: number) => void;
+export type NodeTimeline = (node: HTMLElement) => CustomTimeline | GSAPTimeline;
 export type InitCallback = (node: HTMLElement) => void;
 export interface EnterConfig {
-    tick?: Tick;
-    timeline?: Timeline;
+    tick?: NodeTick;
+    timeline?: NodeTimeline;
     duration?: number;
 };
 export interface LeaveConfig {
-    tick?: Tick;
-    timeline?: Timeline;
+    tick?: NodeTick;
+    timeline?: NodeTimeline;
     duration?: number;
 };
 
-export const init = () => {
-    
+export const onGlobalInit = (callback: InitCallback) => {
+    setContext('globalInitCallback', callback);
 };
 
-export const onGlobalEnter = (callback: Tick | Timeline, isTimeline: boolean) => {
-    setContext('globalEnterConfig', !isTimeline ? {
+export const onGlobalEnter = (callback: NodeTick | NodeTimeline, duration?: number) => {
+    setContext('globalEnterConfig', duration !== undefined ? {
         tick: callback,
+        duration
     } : {
         timeline: callback
     });
 };
-export const onGlobalLeave = (callback: Tick | Timeline, isTimeline: boolean) => {
-    setContext('globalLeaveConfig', !isTimeline ? {
+export const onGlobalLeave = (callback: NodeTick | NodeTimeline, duration?: number) => {
+    setContext('globalLeaveConfig', duration !== undefined ? {
         tick: callback,
+        duration
     } : {
         timeline: callback
     });
@@ -49,7 +44,7 @@ export const lastLeaveDuration = writable(0);
 export const onInit = (callback: InitCallback) => {
     setContext('initCallback', callback);
 };
-export const onEnter = (callback: Tick | Timeline, duration?: number) => {
+export const onEnter = (callback: NodeTick | NodeTimeline, duration?: number) => {
     setContext('enterConfig', duration !== undefined ? {
         tick: callback,
         duration
@@ -57,7 +52,7 @@ export const onEnter = (callback: Tick | Timeline, duration?: number) => {
         timeline: callback
     });
 };
-export const onLeave = (callback: Tick | Timeline, duration?: number) => {
+export const onLeave = (callback: NodeTick | NodeTimeline, duration?: number) => {
     setContext('leaveConfig', duration !== undefined ? {
         tick: callback,
         duration
@@ -65,16 +60,3 @@ export const onLeave = (callback: Tick | Timeline, duration?: number) => {
         timeline: callback
     });
 };
-
-/*
-
-(
-    (node, t) => void,
-    duration
-)
-
-(
-    timeline
-)
-
-*/

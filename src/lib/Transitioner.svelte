@@ -1,146 +1,157 @@
 <script lang="ts">
     import { getContext } from "svelte";
     import { get } from "svelte/store";
-    import { fly } from "svelte/transition";
 
-    import type { GlobalEnterConfig, GlobalLeaveConfig, EnterConfig, InitCallback, LeaveConfig } from "$lib/transitioner";
+    import type { InitCallback, EnterConfig, LeaveConfig, CustomTimeline } from "$lib/transitioner";
     import { lastLeaveDuration } from '$lib/transitioner';
     
     type SvelteTick = (t: number, u: number) => void;
 
-    const globalEnterConfig: GlobalEnterConfig = getContext('globalEnterConfig');
-    const globalLeaveConfig: GlobalLeaveConfig = getContext('globalLeaveConfig');
+    const globalInitCallback: InitCallback = getContext('globalInitCallback');
+    const globalEnterConfig: EnterConfig = getContext('globalEnterConfig');
+    const globalLeaveConfig: LeaveConfig = getContext('globalLeaveConfig');
 
     const initCallback: InitCallback = getContext('initCallback');
     const enterConfig: EnterConfig = getContext('enterConfig');
     const leaveConfig: LeaveConfig = getContext('leaveConfig');
 
     const initAction = (node: HTMLElement) => {
+        globalInitCallback && globalInitCallback(node);
         initCallback && initCallback(node);
     };
     const enter = (node: HTMLElement, _config: {}) => {
-        const { tick, timeline, duration = 0 } = enterConfig ?? { };
-        const { tick: globalTick, timeline: globalTimeline } = globalEnterConfig ?? { };
+        const { tick = () => null, duration = 0, timeline } = enterConfig ?? { };
+        const { tick: globalTick = () => null, duration: globalDuration = 0, timeline: globalTimeline } = globalEnterConfig ?? { };
 
         const delay = get(lastLeaveDuration) ?? 0;
 
-        let globalTl;
-        let tl;
+        let tl: GSAPTimeline | CustomTimeline = {
+            duration: () => duration / 1000,
+            progress: (t: number) => tick(node, t)
+        };
+        let globalTl: GSAPTimeline | CustomTimeline = {
+            duration: () => globalDuration / 1000,
+            progress: (t: number) => globalTick(node, t)
+        };
         let theDuration = 0;
         let theTick: SvelteTick = () => null;
 
-        if (globalTimeline) {
-            globalTl = globalTimeline(node);
-            if (!globalTl?.duration || !globalTl?.progress) {
-                throw 'Enter: not a global timeline object!';
-            }
-        }
+        // Prepare timelines
         if (timeline) {
             tl = timeline(node);
-            if (!tl?.progress || !tl?.duration) {
+            if (!tl?.duration || !tl?.progress) {
                 throw 'Enter: not a component timeline object!';
             }
         }
-
-        if (timeline) {
-            theDuration = tl.duration() * 1000;
-            theTick = globalTimeline ? (t) => {
-                globalTl.progress(t);
-                tl.progress(t);
-            } : (t) => {
-                tl.progress(t);
-            };
-        } else if (tick) {
-            theDuration = duration;
-            theTick = globalTimeline ? (t) => {
-                globalTl.progress(t);
-                tick(node, t);
-            } : globalTick ? (t) => {
-                globalTick(node, t);
-                tick(node, t);
-            } : (t) => {
-                tick(node, t);
-            };
+        if (globalTimeline) {
+            globalTl = globalTimeline(node);
+            if (!globalTl?.progress || !globalTl?.duration) {
+                throw 'Enter: not a global timeline object!';
+            }
         }
 
-        const { css } = fly(node, { delay, duration: theDuration });
+        // Calculate animation duration and tick logic
+        if (tl.duration() > globalTl.duration()) {
+            const ratio = globalTl.duration() / tl.duration();
+
+            theDuration = tl.duration() * 1000;
+            theTick = (t) => {
+                if (t <= ratio) {
+                    globalTl.progress(t / ratio);
+                }
+                tl.progress(t);
+            };
+        } else if (globalTl.duration() > tl.duration()) {
+            const ratio = tl.duration() / globalTl.duration();
+
+            theDuration = globalTl.duration() * 1000;
+            theTick = (t) => {
+                if (t <= ratio) {
+                    tl.progress(t / ratio);
+                }
+                globalTl.progress(t);
+            };
+        } else {
+            theDuration = tl.duration() * 1000;
+            theTick = (t) => {
+                tl.progress(t);
+                globalTl.progress(t);
+            };
+        }
 
         return {
             delay,
             duration: theDuration,
             tick: theTick,
-            // css,
         };
     };
     const leave = (node: HTMLElement, _config: {}) => {
-        const { tick, timeline, duration = 0 } = leaveConfig ?? { };
-        const { tick: globalTick, timeline: globalTimeline } = globalLeaveConfig ?? { };
+        const { tick = () => null, duration = 0, timeline } = leaveConfig ?? { };
+        const { tick: globalTick = () => null, duration: globalDuration, timeline: globalTimeline } = globalLeaveConfig ?? { };
 
-        let globalTl;
-        let tl;
+        let tl: GSAPTimeline | CustomTimeline = {
+            duration: () => duration / 1000,
+            progress: (t: number) => tick(node, t)
+        };
+        let globalTl: GSAPTimeline | CustomTimeline = {
+            duration: () => globalDuration / 1000,
+            progress: (t: number) => globalTick(node, t)
+        };
         let theDuration = 0;
         let theTick: SvelteTick = () => null;
 
-        if (globalTimeline) {
-            globalTl = globalTimeline(node);
-            if (!globalTl?.duration || !globalTl?.progress) {
-                throw 'Leave: not a global timeline object!';
-            }
-        }
+        // Prepare timelines
         if (timeline) {
             tl = timeline(node);
-            if (!tl?.progress || !tl?.duration) {
+            if (!tl?.duration || !tl?.progress) {
                 throw 'Leave: not a component timeline object!';
             }
         }
+        if (globalTimeline) {
+            globalTl = globalTimeline(node);
+            if (!globalTl?.progress || !globalTl?.duration) {
+                throw 'Leave: not a global timeline object!';
+            }
+        }
 
-        if (timeline) {
+        // Calculate animation duration and tick logic
+        if (tl.duration() > globalTl.duration()) {
+            const ratio = globalTl.duration() / tl.duration();
+
             theDuration = tl.duration() * 1000;
-            theTick = globalTimeline ? (_, t) => {
-                globalTl.progress(t);
-                tl.progress(t);
-            } : (_, t) => {
+            theTick = (_, t) => {
+                if (t <= ratio) {
+                    globalTl.progress(t / ratio);
+                }
                 tl.progress(t);
             };
-        } else if (tick) {
-            theDuration = duration;
-            theTick = globalTimeline ? (_, t) => {
+        } else if (globalTl.duration() > tl.duration()) {
+            const ratio = tl.duration() / globalTl.duration();
+
+            theDuration = globalTl.duration() * 1000;
+            theTick = (_, t) => {
+                if (t <= ratio) {
+                    tl.progress(t / ratio);
+                }
                 globalTl.progress(t);
-                tick(node, t);
-            } : globalTick ? (_, t) => {
-                globalTick(node, t);
-                tick(node, t);
-            } : (_, t) => {
-                tick(node, t);
+            };
+        } else {
+            theDuration = tl.duration() * 1000;
+            theTick = (_, t) => {
+                tl.progress(t);
+                globalTl.progress(t);
             };
         }
 
         lastLeaveDuration.set(theDuration);
 
-        const { css } = fly(node, { duration: theDuration });
-
         return {
             duration: theDuration,
             tick: theTick,
-            // css,
         };
     };
 </script>
 
-<!-- <div class="transition" /> -->
 <div class="transition-wrapper" in:enter out:leave use:initAction>
     <slot />
 </div>
-
-<style>
-    .transition {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background-color: aqua;
-        opacity: 0.5;
-        pointer-events: none;
-    }
-</style>

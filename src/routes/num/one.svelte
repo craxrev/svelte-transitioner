@@ -17,7 +17,7 @@
         tl.set(node, {
             opacity: 1
         }).from(node, {
-            duration: 1,
+            duration: 5,
             yPercent: -100,
         });
 
