@@ -1,7 +1,7 @@
 <script>
     import { gsap } from 'gsap';
     
-    import { onInit, onEnter, onLeave } from "$lib/transitioner";
+    import { onInit, onIntroStart, onOutroStart, onIntroEnd, onOutroEnd, intro, outro } from "$lib/transitioner";
     import Transitioner from '$lib/Transitioner.svelte';
 
     onInit((node) => {
@@ -9,7 +9,20 @@
             opacity: 0,
         });
     });
-    onEnter((node) => {
+    onIntroStart(() => {
+        console.log('Component intro started');
+    });
+    onOutroStart(() => {
+        console.log('Component outro started');
+    });
+    onIntroEnd(() => {
+        console.log('Component intro ended');
+    });
+    onOutroEnd(() => {
+        console.log('Component outro eded');
+    });
+
+    intro((node) => {
         const tl = gsap.timeline({
             paused: true
         });
@@ -23,7 +36,7 @@
 
         return tl;
     });
-    onLeave((node) => {
+    outro((node) => {
         const tl = gsap.timeline({
             paused: true
         });

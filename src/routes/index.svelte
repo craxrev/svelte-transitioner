@@ -1,14 +1,14 @@
 <script>
-    import { onInit, onEnter, onLeave } from "$lib/transitioner";
+    import { onInit, intro, outro } from "$lib/transitioner";
     import Transitioner from "$lib/Transitioner.svelte";
 
     onInit((node) => {
         console.log('init:', '/', node);
     });
-    onEnter(() => {
+    intro(() => {
         console.log('in:', '/');
     }, 1000);
-    onLeave(() => {
+    outro(() => {
         console.log('out:', '/');
     }, 3000);
 

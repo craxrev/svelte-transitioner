@@ -1,5 +1,5 @@
 <script>
-    import { onEnter, onLeave } from "$lib/transitioner";
+    import { intro, outro } from "$lib/transitioner";
     import Transitioner from "$lib/Transitioner.svelte";
 </script>
 
