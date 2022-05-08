@@ -27,22 +27,6 @@
         globalInitCallback && globalInitCallback(node);
         initCallback && initCallback(node);
     };
-    const introStart = (event: CustomEvent) => {
-        globalIntroStartCallback && globalIntroStartCallback(event?.target as HTMLElement);
-        introStartCallback && introStartCallback(event?.target as HTMLElement);
-    };
-    const outroStart = (event: CustomEvent) => {
-        globalOutroStartCallback && globalOutroStartCallback(event?.target as HTMLElement);
-        outroStartCallback && outroStartCallback(event?.target as HTMLElement);
-    };
-    const introEnd = (event: CustomEvent) => {
-        globalIntroEndCallback && globalIntroEndCallback(event?.target as HTMLElement);
-        introEndCallback && introEndCallback(event?.target as HTMLElement);
-    };
-    const outroEnd = (event: CustomEvent) => {
-        globalOutroEndCallback && globalOutroEndCallback(event?.target as HTMLElement);
-        outroEndCallback && outroEndCallback(event?.target as HTMLElement);
-    };
     const intro = (node: HTMLElement, _config: {}) => {
         const { tick = () => null, duration = 0, timeline } = introConfig ?? { };
         const { tick: globalTick = () => null, duration: globalDuration = 0, timeline: globalTimeline } = globalIntroConfig ?? { };
@@ -74,32 +58,74 @@
             }
         }
 
+        let hasStarted = false;
+        let isGlobalTlFinished = false;
+        let isTlFinished = false;
+
         // Calculate animation duration and tick logic
         if (tl.duration() > globalTl.duration()) {
             const ratio = globalTl.duration() / tl.duration();
 
             theDuration = tl.duration() * 1000;
             theTick = (t) => {
-                if (t <= ratio) {
+                if (!hasStarted && t !== 0) {
+                    hasStarted = true;
+
+                    introStartCallback && introStartCallback(node);
+                    globalIntroStartCallback && globalIntroStartCallback(node);
+                }
+                if (t < ratio) {
                     globalTl.progress(t / ratio);
+                } else if (!isGlobalTlFinished) {
+                    isGlobalTlFinished = true;
+
+                    t == ratio && globalTl.progress(1);
+                    globalIntroEndCallback && globalIntroEndCallback(node);
                 }
                 tl.progress(t);
+                if (t == 1) {
+                    introEndCallback && introEndCallback(node);
+                }
             };
         } else if (globalTl.duration() > tl.duration()) {
             const ratio = tl.duration() / globalTl.duration();
 
             theDuration = globalTl.duration() * 1000;
             theTick = (t) => {
-                if (t <= ratio) {
+                if (!hasStarted && t !== 0) {
+                    hasStarted = true;
+
+                    introStartCallback && introStartCallback(node);
+                    globalIntroStartCallback && globalIntroStartCallback(node);
+                }
+                if (t < ratio) {
                     tl.progress(t / ratio);
+                } else if (!isTlFinished) {
+                    isTlFinished = true;
+
+                    t == ratio && tl.progress(1);
+                    introEndCallback && introEndCallback(node);
                 }
                 globalTl.progress(t);
+                if (t == 1) {
+                    globalIntroEndCallback && globalIntroEndCallback(node);
+                }
             };
         } else {
             theDuration = tl.duration() * 1000;
             theTick = (t) => {
+                if (!hasStarted && t !== 0) {
+                    hasStarted = true;
+
+                    introStartCallback && introStartCallback(node);
+                    globalIntroStartCallback && globalIntroStartCallback(node);
+                }
                 tl.progress(t);
                 globalTl.progress(t);
+                if (t == 1) {
+                    introEndCallback && introEndCallback(node);
+                    globalIntroEndCallback && globalIntroEndCallback(node);
+                }
             };
         }
 
@@ -138,32 +164,74 @@
             }
         }
 
+        let hasStarted = false;
+        let isGlobalTlFinished = false;
+        let isTlFinished = false;
+
         // Calculate animation duration and tick logic
         if (tl.duration() > globalTl.duration()) {
             const ratio = globalTl.duration() / tl.duration();
 
             theDuration = tl.duration() * 1000;
             theTick = (_, t) => {
-                if (t <= ratio) {
+                if (!hasStarted && t !== 0) {
+                    hasStarted = true;
+
+                    outroStartCallback && outroStartCallback(node);
+                    globalOutroStartCallback && globalOutroStartCallback(node);
+                }
+                if (t < ratio) {
                     globalTl.progress(t / ratio);
+                } else if (!isGlobalTlFinished) {
+                    isGlobalTlFinished = true;
+
+                    t == ratio && globalTl.progress(1);
+                    globalOutroEndCallback && globalOutroEndCallback(node);
                 }
                 tl.progress(t);
+                if (t == 1) {
+                    outroEndCallback && outroEndCallback(node);
+                }
             };
         } else if (globalTl.duration() > tl.duration()) {
             const ratio = tl.duration() / globalTl.duration();
 
             theDuration = globalTl.duration() * 1000;
             theTick = (_, t) => {
-                if (t <= ratio) {
+                if (!hasStarted && t !== 0) {
+                    hasStarted = true;
+
+                    outroStartCallback && outroStartCallback(node);
+                    globalOutroStartCallback && globalOutroStartCallback(node);
+                }
+                if (t < ratio) {
                     tl.progress(t / ratio);
+                } else if (!isTlFinished) {
+                    isTlFinished = true;
+
+                    t == ratio && tl.progress(1);
+                    outroEndCallback && outroEndCallback(node);
                 }
                 globalTl.progress(t);
+                if (t == 1) {
+                    globalOutroEndCallback && globalOutroEndCallback(node);
+                }
             };
         } else {
             theDuration = tl.duration() * 1000;
             theTick = (_, t) => {
+                if (!hasStarted && t !== 0) {
+                    hasStarted = true;
+
+                    outroStartCallback && outroStartCallback(node);
+                    globalOutroStartCallback && globalOutroStartCallback(node);
+                }
                 tl.progress(t);
                 globalTl.progress(t);
+                if (t == 1) {
+                    outroEndCallback && outroEndCallback(node);
+                    globalOutroEndCallback && globalOutroEndCallback(node);
+                }
             };
         }
 
@@ -176,14 +244,6 @@
     };
 </script>
 
-<div
-    class="transition-wrapper"
-    in:intro
-    out:outro
-    on:introstart={introStart}
-    on:outrostart={outroStart}
-    on:introend={introEnd}
-    on:outroend={outroEnd}
-    use:initAction>
+<div class="transition-wrapper" in:intro out:outro use:initAction>
     <slot />
 </div>

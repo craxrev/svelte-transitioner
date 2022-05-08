@@ -17,7 +17,7 @@
         console.log('Global intro ended');
     });
     onGlobalOutroEnd(() => {
-        console.log('Global outro eded');
+        console.log('Global outro ended');
     });
 
     globalIntro(() => {

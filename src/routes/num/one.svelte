@@ -19,7 +19,7 @@
         console.log('Component intro ended');
     });
     onOutroEnd(() => {
-        console.log('Component outro eded');
+        console.log('Component outro ended');
     });
 
     intro((node) => {
