@@ -1,3 +1,9 @@
 # svelte-transitioner
 
-A playground project in which I'm trying to build a transition manager in SvelteKit..
+A Svele plugin that adds new hooks for customizing mount / unmount transitions.
+
+### TODO:
+- add a good README.md file
+- re-work repo examples
+- optimise
+- add some tests
