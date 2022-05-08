@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
     import { gsap } from 'gsap';
     
     import { onInit, onIntroStart, onOutroStart, onIntroEnd, onOutroEnd, intro, outro } from "$lib/transitioner";
     import Transitioner from '$lib/Transitioner.svelte';
 
-    onInit((node) => {
+    onInit((node: HTMLElement) => {
         gsap.set(node, {
             opacity: 0,
         });
@@ -22,7 +22,7 @@
         console.log('Component outro ended');
     });
 
-    intro((node) => {
+    intro((node: HTMLElement) => {
         const tl = gsap.timeline({
             paused: true
         });
@@ -36,7 +36,7 @@
 
         return tl;
     });
-    outro((node) => {
+    outro((node: HTMLElement) => {
         const tl = gsap.timeline({
             paused: true
         });

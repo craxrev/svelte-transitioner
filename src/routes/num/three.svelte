@@ -1,5 +1,4 @@
 <script>
-    import { intro, outro } from "$lib/transitioner";
     import Transitioner from "$lib/Transitioner.svelte";
 </script>
 

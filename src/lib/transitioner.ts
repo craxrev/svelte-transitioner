@@ -6,7 +6,7 @@ export interface CustomTimeline {
     progress: (t: number) => void;
 };
 export type NodeTick = (node: HTMLElement, t: number) => void;
-export type NodeTimeline = (node: HTMLElement) => CustomTimeline | GSAPTimeline;
+export type NodeTimeline = (node: HTMLElement) => CustomTimeline;
 export type NodeCallback = (node: HTMLElement) => void;
 export interface IntroConfig {
     tick?: NodeTick;
