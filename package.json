@@ -22,8 +22,6 @@
     "typescript": "^4.6.4"
   },
   "type": "module",
-  "main": "package/index.js",
-  "svelte": "package/index.js",
   "files": [
     "*.svelte",
     "*.d.ts",
