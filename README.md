@@ -20,10 +20,10 @@ yarn add svelte-transitioner
 This plugin adds the following hooks:
 - `onGlobalInit`: a hook responsible for executing custom code when mounting any of the child components
 - `onInit`: a hook responsible for executing custom code on the current component
-- `onGlobalEnter`: a hook that can execute the same custom transition when mounting any of the child components
-- `onEnter`: a hook that can execute a transition when mounting a component
-- `onGlobalLeave`: a hook that can execute the same custom transition when unmounting any of the child components
-- `onLeave`: a hook that can execute a transition when unmounting a component
+- `globalIntro`: a hook that can execute the same custom transition when mounting any of the child components
+- `intro`: a hook that can execute a transition when mounting a component
+- `globalOutro`: a hook that can execute the same custom transition when unmounting any of the child components
+- `outro`: a hook that can execute a transition when unmounting a component
 
 for the `on*Init` hooks, they will be called like the following:
 ```Javascript
@@ -31,16 +31,16 @@ onInit((node) => {
     // node is the current mounted node
 })
 ```
-as for the `on*Enter` or `on*Leave`, it can be called in two ways:
+as for the `*intro` or `*outro` callbacks, it can be used in two ways:
 ```Javascript
-onEnter((node, t) => {
+intro((node, t) => {
     // node is the current mounted node
     // t is the current transition animation
     // 1000 is the duration of the transition
 }, 1000)
 
 // Or you can use a GSAP Timeline callback instead, like the following
-onGlobalEnter((node) => {
+intro((node) => {
     const tl = gsap.timeline({
         paused: true
     })
@@ -63,15 +63,15 @@ So for example in a SvelteKit project, we can have the following:
 `/routes/__layout.svelte`:
 ```Svelte
 <script>
-    import { onGlobalInit, onGlobalEnter, onGlobalLeave, TransitionLayout } from 'svelte-transitioner'
+    import { onGlobalInit, globalIntro, globalOutro, TransitionLayout } from 'svelte-transitioner'
 
     onGlobalInit((node) => {
 
     })
-    onGlobalEnter((node) => {
+    globalIntro((node) => {
         return gsap.timeline({ paused: true })
     })
-    onGlobalLeave((node, t) => {
+    globalOutro((node, t) => {
 
     })
 </script>
@@ -82,15 +82,15 @@ So for example in a SvelteKit project, we can have the following:
 `/routes/index.svelte`:
 ```Svelte
 <script>
-    import { onInit, onEnter, onLeave, Transitioner } from 'svelte-transitioner'
+    import { onInit, intro, outro, Transitioner } from 'svelte-transitioner'
 
     onInit((node) => {
 
     })
-    onEnter((node) => {
+    intro((node) => {
         return gsap.timeline({ paused: true })
     })
-    onLeave((node, t) => {
+    outro((node, t) => {
 
     })
 </script>
@@ -102,15 +102,15 @@ So for example in a SvelteKit project, we can have the following:
 `/routes/one.svelte`:
 ```Svelte
 <script>
-    import { onInit, onEnter, onLeave, Transitioner } from 'svelte-transitioner'
+    import { onInit, intro, outro, Transitioner } from 'svelte-transitioner'
 
     onInit((node) => {
 
     })
-    onEnter((node) => {
+    intro((node) => {
         return gsap.timeline({ paused: true })
     })
-    onLeave((node, t) => {
+    outro((node, t) => {
 
     })
 </script>
