@@ -24,8 +24,12 @@
     const outroConfig: OutroConfig = getContext('outroConfig');
 
     const initAction = (node: HTMLElement) => {
-        globalInitCallback && globalInitCallback(node);
-        initCallback && initCallback(node);
+        const delay = get(lastOutroDuration) ?? 0;
+
+        setTimeout(() => {
+            globalInitCallback && globalInitCallback(node);
+            initCallback && initCallback(node);
+        }, delay);
     };
     const intro = (node: HTMLElement, _config: {}) => {
         const { tick = () => null, duration = 0, timeline } = introConfig ?? { };
